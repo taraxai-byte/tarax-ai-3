@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="theme-color" content="#2a070d">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TARAX AI · Control Room</title>
+<style>
+:root{--g1:#fff1a8;--g2:#f5c32c;--g3:#b9810a;--red1:#e8352e;--red2:#8f0f14;--panel1:#6e2432;--panel2:#46121c;--tx:#fff3d6;--mu:#f0c7a0}
+*{box-sizing:border-box}
+html{background:#2a070d}
+body{margin:0 auto;max-width:720px;padding:16px;color:var(--tx);font:15px/1.5 system-ui,sans-serif;min-height:100vh;position:relative;
+ background:radial-gradient(circle at 50% -5%,#8a2231 0%,#4a0f1a 45%,#1c0509 100%) fixed}
+body>*{position:relative;z-index:1}
+.sky{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.sky i{position:absolute;border-radius:50%;background:radial-gradient(circle,rgba(255,214,90,.55),rgba(255,214,90,0) 70%);animation:glow 5s ease-in-out infinite}
+.c1{width:280px;height:280px;top:2%;left:-90px}
+.c2{width:240px;height:240px;top:38%;right:-100px;animation-delay:-2s}
+.c3{width:300px;height:300px;bottom:-80px;left:10%;animation-delay:-3.5s}
+@keyframes glow{50%{opacity:.35;transform:scale(1.15)}}
+h1{font-size:24px;text-align:center;margin:10px 0 4px;padding:14px 10px;border:3px solid transparent;border-radius:18px;color:var(--g1);
+ text-shadow:0 2px 0 #7a0a0a,0 0 14px rgba(255,200,60,.8);letter-spacing:.03em;
+ background:linear-gradient(var(--red1),var(--red2)) padding-box,linear-gradient(135deg,var(--g1),var(--g2) 45%,var(--g3)) border-box;
+ box-shadow:0 0 24px rgba(255,190,50,.55),inset 0 2px 0 rgba(255,255,255,.35)}
+h1 b{background:linear-gradient(110deg,#6ee7ff,#fff,#ff9ad5,#b89cff,#7dffd9,#6ee7ff);background-size:300% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 0 8px #8fdcff);animation:shine 5s linear infinite}
+h1::after{content:" ◆";font-size:.6em;color:#8fdcff;text-shadow:0 0 10px #8fdcff}
+@keyframes shine{to{background-position:300% 0}}
+.sub{color:var(--mu);margin:0 0 14px;font-size:13px;text-align:center}
+.card{border:3px solid transparent;border-radius:20px;padding:14px;margin:14px 0;
+ background:linear-gradient(var(--panel1),var(--panel2)) padding-box,linear-gradient(135deg,var(--g1),var(--g2) 40%,var(--g3) 70%,var(--g1)) border-box;
+ box-shadow:0 0 22px rgba(255,190,50,.38),inset 0 0 22px rgba(0,0,0,.45)}
+h2{display:inline-block;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--g1);margin:0 0 10px;padding:6px 14px;border-radius:999px;
+ background:linear-gradient(var(--red1),var(--red2));border:2px solid var(--g2);text-shadow:0 1px 0 #6a0808;box-shadow:0 0 12px rgba(255,190,50,.5)}
+label{display:block;font-size:12px;color:var(--mu);margin:8px 0 3px}
+input,select{width:100%;padding:11px;border-radius:12px;border:2px solid var(--g3);background:#2b0a10;color:var(--tx);font-size:15px}
+input::placeholder{color:#b98f7a}
+input:focus,select:focus{outline:none;border-color:var(--g1);box-shadow:0 0 12px rgba(255,214,90,.7)}
+button{position:relative;overflow:hidden;margin-top:12px;width:100%;padding:13px;border:3px solid var(--g2);border-radius:999px;color:var(--g1);font-weight:800;font-size:16px;letter-spacing:.04em;
+ text-shadow:0 2px 0 #0b5a12;background:linear-gradient(#66e84f,#1f9a2b 60%,#16781f);box-shadow:0 0 18px rgba(110,255,90,.6),inset 0 2px 0 rgba(255,255,255,.45);animation:pulse 2.2s ease-in-out infinite}
+button::after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.8),transparent);transform:skewX(-20deg);animation:sweep 3s ease-in-out infinite}
+@keyframes sweep{60%,100%{left:130%}}
+@keyframes pulse{50%{box-shadow:0 0 30px rgba(140,255,110,.95),inset 0 2px 0 rgba(255,255,255,.45)}}
+pre{background:#12060a;color:#ffeccb;border:2px solid var(--g3);border-radius:12px;padding:10px;white-space:pre-wrap;word-break:break-word;font-size:12px;max-height:340px;overflow:auto}
+.err{color:#ff9a9a}.ok{color:#7dffb0}.note{font-size:12px;color:var(--mu)}
+@media (prefers-reduced-motion:reduce){.sky i,h1 b,button,button::after{animation:none}}
+</style></head><body>
+<div class="sky" aria-hidden="true"><i class="c1"></i><i class="c2"></i><i class="c3"></i></div>
+<h1>TARAX<b>AI</b> · Control Room</h1>
+<p class="sub">Factory forecast → buyer RFQ → match → deal → fee only after confirmed delivery.</p>
+
+<div class="card"><h2>Admin key</h2>
+<input id="key" type="password" placeholder="ADMIN_KEY (only for verify / settle)" autocomplete="off">
+<p class="note">Kept in this page's memory only. Never share it.</p></div>
+
+<div id="forms"></div>
+<div class="card"><h2>Result</h2><pre id="out">Ready.</pre></div>
+
+<script>
+const F=[
+ {t:"1 · Register company",m:"POST",p:"/api/companies",f:[["name"],["country","text","ISO-2, e.g. TR"],["role","select",["factory","buyer"]],["email","email"]]},
+ {t:"2 · Verify company (admin)",m:"POST",p:"/api/companies/{company_id}/verify",f:[["company_id"]]},
+ {t:"3 · Factory forecast (30-90 days)",m:"POST",p:"/api/forecasts",f:[["company_id"],["product"],["quantity","number"],["unit","text","m, kg, tons"],["ready_date","date"],["min_price_usd","number"]]},
+ {t:"4 · Buyer RFQ",m:"POST",p:"/api/rfqs",f:[["company_id"],["product"],["quantity","number"],["unit","text","m, kg, tons"],["needed_by","date"],["max_price_usd","number"]]},
+ {t:"5 · All matches",m:"GET",p:"/api/matches",f:[]},
+ {t:"6 · Open deal from a match",m:"POST",p:"/api/deals",f:[["forecast_id"],["rfq_id"]]},
+ {t:"7 · Advance deal",m:"POST",p:"/api/deals/{deal_id}/advance",f:[["deal_id"],["to","select",["compliance_cleared","escrow_funded","shipped","delivered","buyer_confirmed","settled","cancelled"]],["actor"],["ref","text","escrow / shipment ref"],["approved_by","text","required for settled"]]},
+ {t:"8 · View deal",m:"GET",p:"/api/deals/{deal_id}",f:[["deal_id"]]}
+];
+const out=document.getElementById("out"),box=document.getElementById("forms");
+function show(txt,cls){out.className=cls||"";out.textContent=txt}
+F.forEach(c=>{
+ const card=document.createElement("div");card.className="card";
+ const h=document.createElement("h2");h.textContent=c.t;card.appendChild(h);
+ const els={};
+ c.f.forEach(([n,type,x])=>{
+  const l=document.createElement("label");l.textContent=n;card.appendChild(l);
+  let e;
+  if(type==="select"){e=document.createElement("select");x.forEach(o=>{const op=document.createElement("option");op.value=op.textContent=o;e.appendChild(op)})}
+  else{e=document.createElement("input");e.type=type||"text";if(type==="number")e.step="any";if(x)e.placeholder=x}
+  els[n]=e;card.appendChild(e)});
+ const b=document.createElement("button");b.textContent=c.m==="GET"?"Load":"Submit";
+ b.onclick=async()=>{
+  let path=c.p;const body={};
+  for(const [n,type] of c.f.map(a=>[a[0],a[1]])){
+   const v=els[n].value.trim();
+   if(path.includes("{"+n+"}")){path=path.replace("{"+n+"}",encodeURIComponent(v));continue}
+   body[n]=type==="number"?(v===""?null:parseFloat(v)):(v===""?null:v)}
+  show("Working…");
+  try{
+   const r=await fetch(path,{method:c.m,headers:{"Content-Type":"application/json","X-Admin-Key":document.getElementById("key").value},body:c.m==="GET"?undefined:JSON.stringify(body)});
+   const j=await r.json().catch(()=>({}));
+   show(r.status+" "+(r.ok?"OK":"ERROR")+"\n"+JSON.stringify(j,null,2),r.ok?"ok":"err");
+  }catch(e){show("Network error: "+e.message,"err")}};
+ card.appendChild(b);box.appendChild(card)});
+</script></body></html>
